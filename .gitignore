@@ -1,0 +1,9 @@
+.idea/
+.ipynb_checkpoints/
+__pycache__/
+data/
+data_normalized/
+final_image*/
+final_result*/
+runs/
+Untitled.ipynb
