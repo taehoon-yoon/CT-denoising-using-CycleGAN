@@ -3,14 +3,61 @@
 
 You can find details about Low Dose CT Grand Challenge from this [Official Website.](https://www.aapm.org/grandchallenge/lowdosect/#trainingData)
 
-You can download data set(~8.3GB) from [data link.](https://drive.google.com/drive/folders/1pC7Coiu3bcPAy2Kno7b6jdyLzcs-G1Gz?usp=sharing)
+You can download data set(~7.6GB) from [data link.](https://drive.google.com/file/d/1Ov6yyzbnCC_gYNuk6RS6EfvVAoSqKGUC/view?usp=sharing)
 
-Download the ```data.zip``` and place ```data``` folder in main project directory.
+Download the ```data.zip``` and extract. After you can find ```data``` folder, place ```data``` folder in main project directory. Main project directory must be configured as follow.
+
+```
+│  .gitignore
+│  dataset.py
+│  inference.ipynb
+│  inference_unet.ipynb
+│  make_noise_target.ipynb
+│  model.py
+│  README.md
+│  train.ipynb
+│  train_unet.ipynb
+│  utils.py
+│  
+├─data
+│  ├─test
+│  │  ├─fd
+│  │  │      1.npy
+│  │  │      2.npy
+│  │  │      3.npy
+|  |  |      ... 
+│  │  │      
+│  │  └─qd
+│  │          1.npy
+│  │          2.npy
+│  │          3.npy
+|  |          ...
+│  │          
+│  └─train
+│      ├─fd
+│      │      1.npy
+│      │      2.npy
+│      │      3.npy
+|      |      ...
+│      │      
+│      └─qd
+│              1.npy
+│              2.npy
+│              3.npy
+|              ...
+│              
+└─images_README
+        0041.png
+        0052.png
+        0059.png
+        ...
+```        
+
 
 - - -
 
 ## Objective
-- The goal of this challenge and our project is to denoise low dose(quarter dose) CT Image to get high dose(full dose) CT Image.
+- The goal of this challenge and our project is to de-noise low dose(quarter dose) CT Image to get high dose(full dose) CT Image.
 
 ## Data Preview
 Inside the ```data``` folder you will find two sub folder ```qd``` and ```fd``` each representing quarter dose and full dose.
@@ -29,42 +76,21 @@ For clarity, I also included center cropped image below.
 
 ## Model Structure
 
-We mainly followed [Original paper](https://arxiv.org/abs/1703.10593?amp=1) and [Official Implementation.](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
-
 ### Generator
 
 For the generator, we used ***U-net*** based generator. 
-
-U-net based generator's structure is not presented in Cycle GAN paper, but you can find code in the official implementation. -> [Link](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/9bcef69d5b39385d18afad3d5a839a02ae0b43e7/models/networks.py#L436)
-
-Following exact same structure given in official code, we made U-net generator structure image, presented below.
-
-<img src="./images_README/Cycle GAN Generator.png">
-
-From the above structure, we made slight change for our task.
-
-1. In the Cycle GAN author's U-net generator, they did't used concatenation at the outter most layer, but we found that for denoising task, concatenating input layer to output layer improves denoising ability. And to make final output image have one color channel, we used Convolutional2D layer with kernel=1, stride=1. Just adding the 2 channel in channel axis to make output one channel performed poor.
-
-2. At the final output we didn't use ```tanh``` activation. Instead we just used raw output from last Convolutional2D layer.
-
-Out final model structure are given below.
-
 
 <img src="./images_README/Cycle GAN Generator_my_version.png">
 
 ### Discriminator
 
-For the discriminator, we used 70X70 ***PatchGAN***. Which was introduced in original paper and also you can find detail implementation in official code.
-
-For those of you wandering what PathGAN is, I recommend this [website](https://sahiltinky94.medium.com/understanding-patchgan-9f3c8380c207) to understand what it is.
-
-We just used PatchGAN presented in [this code.](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/9bcef69d5b39385d18afad3d5a839a02ae0b43e7/models/networks.py#L538) And below is the detail structure of 70X70 PatchGAN.
+For the discriminator, we used 70X70 ***PatchGAN***. 
 
 <img src="./images_README/Cycle GAN Discriminator.png">
 
 ### Train Result
 
-We used same parameters and learning rate as in original paper. 
+We used Adam optimizer with a batch size of 8, total epoch was 80 epochs. Initial learning rate was 0.0002. First half the total epoch, I remained same learning rate and linearly decay the learning rate to zero over the next remaining epochs.  
 
 Below is the PSNR(Peak Signal to Noise Ratio) between Ground truth(full dose CT image) with U-net generator generated image.
 
