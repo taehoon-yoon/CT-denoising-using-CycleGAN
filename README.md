@@ -197,6 +197,10 @@ Main project directory must be configured as follow in order to use pretrained m
         ...
 ```
 
+## Baseline model (de-noising U-net) Code Structure & Explanation
+
+
+
 - - -
 
 ## Additional
