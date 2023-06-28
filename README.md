@@ -132,6 +132,20 @@ Left image is the noise(difference between full dose and quarter dose) and the r
 
 - - -
 
+## Required Modules
+
+- torch (1.11.0)
+- torchvision (0.12.0)
+- torchmetrics
+- torchsummary
+- tqdm
+- PIL
+- numpy
+- matplotlib
+- tensorboard (optional)
+
+- - -
+
 ## Code Structure & Explanation
 
 ### 0. Data Download
@@ -147,7 +161,7 @@ Left image is the noise(difference between full dose and quarter dose) and the r
 - Inside ```inference.ipynb``` you can find ```plot_result``` function. It will generate image like the one in Result section. ```crop``` parameter will center crop the image to given size. ```save``` parameter will save image under the folder ```final_image``` or ```final_image_center``` if you use ```crop``` parameter.
 - ```plot_reult_diff``` generate image like the one in Noise Comparison. Parameters are same as ```plot_result``` function. It will save image under the folder ```final_image_diff``` or ```final_image_diff_center``` if you use ```crop``` parameter.
 
-To use pretrained model, download [final_result.zip](https://drive.google.com/drive/folders/1pC7Coiu3bcPAy2Kno7b6jdyLzcs-G1Gz?usp=sharing) and place the unzipped folders (Discriminator_A, GAN_FD_to_QD...) under ```final_result``` folder. If you don't have ```final_result``` folder, you have to make it in the main project directory. And go to ```Step 3```.
+To use pretrained model, download [final_result.zip](https://drive.google.com/drive/folders/1pC7Coiu3bcPAy2Kno7b6jdyLzcs-G1Gz?usp=sharing) and place the unzipped folders (Discriminator_A, GAN_FD_to_QD...) under ```final_result``` folder. And go to ```3. Inference```.
 
 Main project directory must be configured as follow in order to use pretrained model.
 
@@ -199,7 +213,7 @@ Main project directory must be configured as follow in order to use pretrained m
 
 ## Baseline model (de-noising U-net) Code Structure & Explanation
 
-We used U-net as a baseline model for comparison with our cycle GAN model. We selected U-net as baseline model since U-net is frequently used model for de-noising task.
+We used U-net as a baseline model for comparison with our cycle GAN model. We selected U-net as a baseline model since U-net is frequently used model for de-noising task.
 
 This section is instruction for training baseline model (U-net) and for providing comparison with cycle GAN model.
 
@@ -211,8 +225,61 @@ This section is instruction for training baseline model (U-net) and for providin
 This step includes comparison with cycle GAN model. So in order to execute this step, you must have trained cycle GAN model in your directory. (```final_result``` folder must be in your main project folder)
 
 - Run ```inference_unet.ipynb```. You can get PSNR and SSIM value for your trained model.
-- Inside ```inference_unet.ipynb``` you can find ```plot_result``` function. It will generate image like the one in Result section. ```crop``` parameter will center crop the image to given size. ```save``` parameter will save image under the folder ```final_image``` or ```final_image_center``` if you use ```crop``` parameter.
-- ```plot_reult_diff``` generate image like the one in Noise Comparison. Parameters are same as ```plot_result``` function. It will save image under the folder ```final_image_diff``` or ```final_image_diff_center``` if you use ```crop``` parameter.
+- Inside ```inference_unet.ipynb``` you can find ```plot_result``` function. This is the same function introduced before.
+- ```plot_result_comparison``` function compares the de-noised result between baseline model and cycle GAN generator model. ```crop``` parameter will center crop the image to given size. ```save``` parameter will save image under the folder ```final_image_comparison_with_noise``` or ```final_image_center_comparison_with_noise``` if you use ```crop``` parameter.
+
+To use pretrained baseline model, download [final_result_denoising_unet.zip](https://drive.google.com/drive/folders/1pC7Coiu3bcPAy2Kno7b6jdyLzcs-G1Gz?usp=sharing) and place the unzipped folder ```final_result_denoising_unet``` under main project directory. And go to ```2. Inference```.
+
+Main project directory must be configured as follow in order to use pretrained baseline model.
+
+```
+│  .gitignore
+│  dataset.py
+│  inference.ipynb
+│  inference_unet.ipynb
+│  model.py
+│  README.md
+│  train.ipynb
+│  train_unet.ipynb
+│  utils.py
+│  
+├─data
+│  ├─test
+│  │  ├─fd
+│  │  │       ...
+│  │  └─qd
+│  │          ...
+│  │          
+│  └─train
+│      ├─fd
+│      │      ...  
+│      └─qd
+│             ...
+│              
+├─final_result
+│  │  history.pkl
+│  │  
+│  ├─Discriminator_A
+│  │      Disc_A.pt
+│  │      
+│  ├─Discriminator_B
+│  │      Disc_B.pt
+│  │      
+│  ├─GAN_FD_to_QD
+│  │      GAN.pt
+│  │      
+│  └─GAN_QD_to_FD
+│          GAN.pt
+│          
+├─final_result_denoising_unet
+│      denoising_unet.pt
+│      history.pkl
+│      
+└─images_README
+        0041.png
+        0052.png
+        ...
+```
 
 - - -
 
@@ -220,9 +287,9 @@ This step includes comparison with cycle GAN model. So in order to execute this 
 
 ### Loss Function
 
- We present Loss function used for generator and discriminator. Although loss function equation is well explained in the original paper, there is no one complete equation in the paper. So we organized the loss functions in one equation.
+ We present Loss function used for generator and discriminator. 
  
- We follow the notation given in the original paper. Check the image below. (Reference: [Original paper figure 3](https://arxiv.org/abs/1703.10593?amp=1))
+ We follow the notation given in the original paper. Check the image below.
  
  <img src="./images_README/explain.png">
  
