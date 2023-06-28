@@ -199,7 +199,20 @@ Main project directory must be configured as follow in order to use pretrained m
 
 ## Baseline model (de-noising U-net) Code Structure & Explanation
 
+We used U-net as a baseline model for comparison with our cycle GAN model. We selected U-net as baseline model since U-net is frequently used model for de-noising task.
 
+This section is instruction for training baseline model (U-net) and for providing comparison with cycle GAN model.
+
+### 1. Training
+- Run ```train_unet.ipynb```. Model will be saved under ```final_result_denoising_unet``` folder.
+- Run ```tensorboard --logdir ./runs``` to monitor training.
+### 2. Inference
+
+This step includes comparison with cycle GAN model. So in order to execute this step, you must have trained cycle GAN model in your directory. (```final_result``` folder must be in your main project folder)
+
+- Run ```inference_unet.ipynb```. You can get PSNR and SSIM value for your trained model.
+- Inside ```inference_unet.ipynb``` you can find ```plot_result``` function. It will generate image like the one in Result section. ```crop``` parameter will center crop the image to given size. ```save``` parameter will save image under the folder ```final_image``` or ```final_image_center``` if you use ```crop``` parameter.
+- ```plot_reult_diff``` generate image like the one in Noise Comparison. Parameters are same as ```plot_result``` function. It will save image under the folder ```final_image_diff``` or ```final_image_diff_center``` if you use ```crop``` parameter.
 
 - - -
 
